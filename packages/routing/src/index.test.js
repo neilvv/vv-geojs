@@ -4,7 +4,7 @@ const { lineString } = require('@turf/helpers');
 const booleanEqual = require('@turf/boolean-equal').default;
 const fs = require('fs');
 
-const { stich, stichAll } = require('./stich.ts'); // require the calculator module
+const { stich, stichAll } = require('./index.ts'); // require the calculator module
 /*
 const directories = {
   in: path.join(__dirname, "test", "in") + path.sep,

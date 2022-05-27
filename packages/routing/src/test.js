@@ -4,12 +4,12 @@ const { lineString } = require('@turf/helpers');
 const booleanEqual = require('@turf/boolean-equal').default;
 const fs = require('fs');
 
-const { stich, stichAll } = require('./index.ts'); // require the calculator module
+const { newstich, stich, stichAll } = require('./index.ts'); // require the calculator module
 /*
 const directories = {
   in: path.join(__dirname, "test", "in") + path.sep,
   out: path.join(__dirname, "test", "out") + path.sep,
-};
+};ordering has no impact
 
 let fixtures = fs.readdirSync(directories.in).map((filename) => {
   return {
@@ -39,12 +39,24 @@ function save(filename, features) {
   fs.writeFileSync(filename, JSON.stringify(features, null, 2));
 }
 
+function load(filename) {
+  return JSON.parse(fs.readFileSync(filename));
+}
+
+test('newStich', (t) => {
+    const lineA = lineString([[0, 0.1], [0, 0.11]]);
+    const lineB = lineString([[0, 0.105], [0, 0.15]]);
+    var result = newStich(lineA, lineB, 0.005);
+    console.log('res', result);
+  t.end();
+});
+
 test('vv-lib-stitch real example 1', (t) => {
   let rawdata = fs.readFileSync('./test/in/real1.geojson');
   const fcol = JSON.parse(rawdata);
   const result = stich(fcol.features[0], fcol.features[1]); // expecting [0,0],[0,1],[0,2],[0,3]
-  rawdata = fs.readFileSync('./test/out/real1.geojson');
-  const expectedLine = JSON.parse(rawdata);
+  const expectedLine = load('./test/out/real1.geojson');
+  //const expectedLine = JSON.parse(rawdata);
   t.deepEquals(result, expectedLine);
   // fs.writeFileSync("./test/out/real1.geojson", JSON.stringify(result, null, 2))
   t.end();
@@ -59,6 +71,21 @@ test('stich two overlapping lines', (t) => {
   t.true(booleanEqual(result, expected));
   // t.true(result);
   // t.deepEqual(result, expected);
+  t.end();
+});
+
+test('stich two overlapping lines both ways', (t) => {
+  const lineA = lineString([[0, 0.1], [0.1, 0.11], [0.11, 0.12], [0.12, 0.13]]);
+  const lineB = lineString([[0.11, 0.12], [0.12, 0.13]]);
+  const result = stich(lineA, lineB); // expecting [0,0],[0,1],[0,2],[0,3]
+  //const expected = lineString([[0, 0.1], [0, 0.105], [0, 0.11], [0, 0.15]]);
+  // const expected = lineString([[0,3]]);
+  t.deepEqual(result, lineA);
+  console.log('res1', result);
+  const result2 = stich(lineB, lineA); // expecting [0,0],[0,1],[0,2],[0,3]
+  // t.true(result);
+  console.log('res2', result2);
+  t.deepEqual(result2, lineA);
   t.end();
 });
 
@@ -159,7 +186,7 @@ test('stich single common pt', (t) => {
   t.end();
 });
 
-test('stich real example', (t) => {
+test('stich real example - expected out.geojson', (t) => {
   const testLines = [[
     [-4.262351989746094, 55.90892348830684],
     [-4.2628079652786255, 55.90924822243457],
@@ -176,7 +203,7 @@ test('stich real example', (t) => {
   const lineB = lineString(testLines[1]);
   const result = stich(lineA, lineB); // expecting [0,0],[0,1],[0,2],[0,3]
   save('./test/out/out.geojson', result);
-  const expected = lineString([[0, 0.099], [0, 0.105], [0, 0.15], [0, 0.16]].reverse());
+  const expected = load('./test/out/out.geojson');
   // const expected = lineString([[0,3]]);
   t.true(booleanEqual(result, expected));
   // t.true(result);
@@ -203,11 +230,128 @@ test('stich real example 2', (t) => {
   const lineB = lineString(testLines[1]);
   const result = stich(lineA, lineB); // expecting [0,0],[0,1],[0,2],[0,3]
   save('./test/out/out2.geojson', result);
-  const expected = lineString([[0, 0.099], [0, 0.105], [0, 0.15], [0, 0.16]].reverse());
+  const expected = load('./test/out/out2.geojson');
   // const expected = lineString([[0,3]]);
   t.true(booleanEqual(result, expected));
   // t.true(result);
   // t.deepEqual(result, expected);
+  t.end();
+});
+
+const line2 = [
+  [
+    -4.241065979003906,
+    55.89706281604674,
+  ],
+  [
+    -4.2409586906433105,
+    55.8970658237763,
+  ],
+];
+
+const line1 = [
+  [
+    -4.257609844207764,
+    55.896530444247446,
+  ],
+  [
+    -4.257550835609436,
+    55.89655751417624,
+  ],
+  [
+    -4.256220459938049,
+    55.8970658237763,
+  ],
+  [
+    -4.255898594856262,
+    55.8971530478311,
+  ],
+  [
+    -4.255614280700684,
+    55.89716808644141,
+  ],
+  [
+    -4.25496518611908,
+    55.897138009214956,
+  ],
+  [
+    -4.254659414291382,
+    55.89712597831786,
+  ],
+  [
+    -4.25420343875885,
+    55.89710793196517,
+  ],
+  [
+    -4.252926707267761,
+    55.89704777739564,
+  ],
+  [
+    -4.251070618629456,
+    55.897005669141464,
+  ],
+  [
+    -4.250759482383728,
+    55.89699965367285,
+  ],
+  [
+    -4.248399138450623,
+    55.89697258405255,
+  ],
+  [
+    -4.248152375221252,
+    55.89697559178907,
+  ],
+  [
+    -4.246687889099121,
+    55.89698461499722,
+  ],
+  [
+    -4.245491623878479,
+    55.897005669141464,
+  ],
+  [
+    -4.244418740272522,
+    55.89702070780888,
+  ],
+  [
+    -4.243925213813782,
+    55.89702672327425,
+  ],
+  [
+    -4.24346387386322,
+    55.89703273873866,
+  ],
+  [
+    -4.242680668830872,
+    55.89704476966469,
+  ],
+  [
+    -4.241999387741089,
+    55.89705379285678,
+  ],
+  [
+    -4.241387844085693,
+    55.89705980831698,
+  ],
+  [
+    -4.241065979003906,
+    55.89706281604674,
+  ],
+  [
+    -4.2409586906433105,
+    55.8970658237763,
+  ],
+];
+
+test('test that ordering has no impact', (t) => {
+  const lineA = lineString(line1);
+  const lineB = lineString(line2);
+  const resultA = stich(lineA, lineB); // expecting [0,0],[0,1],[0,2],[0,3]
+  const resultB = stich(lineB, lineA); // expecting [0,0],[0,1],[0,2],[0,3]
+  // save("out2.geojson", result);
+  // const expected = lineString(testLines[1]);
+  t.deepEquals(resultA, resultB);
   t.end();
 });
 
@@ -279,7 +423,7 @@ test('stich real example with 3 lines', (t) => {
   let result = stich(lineA, lineB); // expecting [0,0],[0,1],[0,2],[0,3]
   // save("out2.geojson", result);
   const expected = lineString(testLines[1]);
-  t.true(booleanEqual(result, expected));
+  t.deepEqual(result, expected);
   // now stich 0 to result
   result = stich(expected, lineString(testLines[1]));
   save('./test/out/merge3-2.geojson', result);
@@ -305,7 +449,10 @@ test('joining > 2 linestrings (not all will overlap with each other)', (t) => {
   let lines = [a, b, c, d];
 
   let result = stichAll(lines);
-  const expected = lineString([[0, 0.10], [0, 0.11]]);
+
+  const expected = lineString([[0, 0.10], [0, 0.107], [0, 0.11], [0, 0.117], [0, 0.12],
+    [0, 0.127], [0, 0.13], [0, 0.14]]);
+  t.equals(result, expected);
   a = lineString([[0, 0.10], [0, 0.11]]);
   b = lineString([[0, 0.107], [0, 0.12]]);
   c = lineString([[0, 0.117], [0, 0.13]]);

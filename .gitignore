@@ -14,6 +14,8 @@ node_modules
 # build
 dist/**/*
 packages/*/dist
+packages/*/build
+packages/old
 
 .tsbuildinfo
 

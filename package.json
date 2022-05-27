@@ -4,17 +4,24 @@
   "description": "Viavoom TS Modules",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "test": "npm-run-all test:*",
+    "test:tape": "ts-node -r esm test.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/tape": "^4.13.2",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "eslint": "^8.9.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "ts-node": "^10.5.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
   }
 }

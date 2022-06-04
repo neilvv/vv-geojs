@@ -90,14 +90,29 @@ export function newstich(a: Feature<LineString>, b: Feature<LineString>, toleran
     if (!b0ona.match && !bnona.match) {
       // B may fully contain A - validate and then return B
       console.log('Info B may fully contain A - validate and then return B');
-      return;
+      // expect all A pts are on B
+      let matched = false;
+      for (const ap of apts) {
+        if (!isPointOnOrNearLine(
+          ap, b, tolerance)) {
+            return null;
+          }
+      }
+      return b;
     }
   }
   if (b0ona.match && bnona.match) {
     if (!a0onb.match && !anonb.match) {
       // A may fully contain B - validate and then return A
       console.log('// a may fully contain b - validate and then return a');
-      return;
+      for (const bp of bpts) {
+        if (!isPointOnOrNearLine(
+          bp, a, tolerance)) {
+            return null;
+          }
+      }
+      return a;
+      
     }
   }
 
@@ -145,46 +160,26 @@ export function newstich(a: Feature<LineString>, b: Feature<LineString>, toleran
     }
   }
 
+  if (!overlapped) {
+    console.log("Panic!!");
+    return;
+
+  }
+
+  // so drop zero to bindex pts from right pts
+  rightpts = rightpts.slice(bindex, rightpts.length);
+  // and now join to leftpts and return the merged line
+  leftpts = leftpts.concat(rightpts);
+  a.geometry.coordinates = leftpts;
+
   console.log('Overlapped {}', overlapped);
+  return a;
 
-
-
-
-
-
-
-
-
-
-
-
-  if (a0onb.match && bnona.match) {
-    console.log("begging of a overlaps end of b");
-    // find index of a on b.
-    const pt: Feature<Point> = a0onb.pt;
-    const indexOfAonB = pt.properties!.index;
-
-    console.log("BLEN", bpts.length);
-    var newBCoords = bpts.slice(indexOfAonB, bpts.length);
-    b.geometry.coordinates = newBCoords.concat(apts);
-    // then discard all points from there until end of B
-    console.log(b);
-    console.log(b.geometry.coordinates);
-
-    // then join remainder of B to A
 
 
   }
 
 
-
-
-  // snap the end onto opposite line and find index of snapped point
-  //if (a0onb) {
-  //    btarget).splice(index + 1, 0, getCoords(pt));
-  // /}
-  return [a0onb, anonb, b0ona, bnona];
-}
 
 
 
